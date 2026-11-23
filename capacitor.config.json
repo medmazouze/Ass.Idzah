@@ -1,0 +1,8 @@
+{
+  "appId": "org.edzakh.idbouka.manager",
+  "appName": "جمعية إدزاح إدبوكا",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

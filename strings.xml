@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">جمعية إدزاح إدبوكا</string>
+    <string name="title_activity_main">جمعية إدزاح إدبوكا</string>
+    <string name="package_name">org.edzakh.idbouka.manager</string>
+    <string name="custom_url_scheme">org.edzakh.idbouka.manager</string>
+</resources>
