@@ -1,0 +1,1 @@
+/* Legacy duplicate accordion builder disabled: the four square tiles are the only top-level navigation. */

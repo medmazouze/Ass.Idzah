@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نافذة الساكنة — قطاع 2 (V29)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts: Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: {
+              50: '#f0fdf4',
+              100: '#ccfbf1',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+            }
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #f8fafc;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6">
+
+    <!-- Top App Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      
+      <!-- App Header & Toolbar -->
+      <div class="p-5 sm:p-6 bg-slate-50 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-700 text-white flex items-center justify-center font-bold text-xl shadow-md">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">نافذة الساكنة — قطاع 2 (V29)</h1>
+              <p class="text-xs sm:text-sm text-slate-500 mt-0.5">إدارة المنخرطين، الاستيراد والتصدير، والبطائق التفصيلية</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Toolbar -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full lg:w-auto">
+          <button type="button" id="btnDownloadTemplate" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-sm font-bold transition shadow-sm">
+            <i class="fa-solid fa-file-csv text-teal-700"></i>
+            <span>تحميل قالب فارغ</span>
+          </button>
+
+          <button type="button" id="btnExportCSV" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-sm font-bold transition shadow-sm">
+            <i class="fa-solid fa-file-export text-slate-600"></i>
+            <span>تصدير اللائحة</span>
+          </button>
+
+          <button type="button" id="btnImportCSV" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold transition shadow-md">
+            <i class="fa-solid fa-file-import"></i>
+            <span>استيراد المنخرطين</span>
+          </button>
+          <input type="file" id="fileImportInput" accept=".csv" class="hidden" />
+        </div>
+      </div>
+
+      <!-- Notification Banner -->
+      <div id="toastNotification" class="hidden mx-6 mt-4 p-3.5 rounded-xl text-sm font-bold flex items-center justify-between transition-all">
+        <div class="flex items-center gap-2.5">
+          <i id="toastIcon" class="fa-solid"></i>
+          <span id="toastMessage"></span>
+        </div>
+        <button type="button" onclick="hideToast()" class="text-xs opacity-75 hover:opacity-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- Controls & Search -->
+      <div class="p-5 sm:p-6 border-b border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="relative w-full sm:w-80">
+          <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="searchInput" placeholder="بحث بالاسم أو رقم الانخراط..." class="w-full pl-4 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition" />
+        </div>
+
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <span id="membersCounter" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold border border-slate-200">
+            <i class="fa-solid fa-user-group text-slate-500"></i>
+            <span>إجمالي المنخرطين: 0</span>
+          </span>
+          
+          <button type="button" id="btnAddMember" class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-bold transition shadow-sm">
+            <i class="fa-solid fa-plus"></i>
+            <span>إضافة منخرط</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Simplified Population Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-right border-collapse">
+          <thead>
+            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
+              <th class="py-3.5 px-6">الاسم الكامل</th>
+              <th class="py-3.5 px-6">رقم الانخراط</th>
+              <th class="py-3.5 px-6">وضعية الانخراط</th>
+              <th class="py-3.5 px-6">وضعية الاشتراك</th>
+              <th class="py-3.5 px-6 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="membersTableBody" class="divide-y divide-slate-100 text-sm">
+            <!-- Table rows populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Detailed Profile / Edit Modal -->
+  <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden transform transition-all scale-95 opacity-0 modal-card">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-lg font-bold">
+            <i class="fa-solid fa-id-card"></i>
+          </div>
+          <div>
+            <h2 id="modalTitle" class="text-base font-bold text-slate-900">بطاقة ملف المنخرط</h2>
+            <p class="text-xs text-slate-500">مراجعة وتعديل البيانات التفصيلية</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Form) -->
+      <div class="p-6 overflow-y-auto flex-1">
+        <form id="memberForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input type="hidden" id="editMemberId" />
+
+          <!-- Full Name -->
+          <div class="sm:col-span-1 flex flex-col gap-1.5">
+            <label for="inputFullName" class="text-xs font-bold text-slate-700">الاسم الكامل <span class="text-red-500">*</span></label>
+            <input type="text" id="inputFullName" required class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition" placeholder="مثال: أحمد بنعلي" />
+          </div>
+
+          <!-- Membership Number -->
+          <div class="sm:col-span-1 flex flex-col gap-1.5">
+            <label for="inputMembershipNo" class="text-xs font-bold text-slate-700">رقم الانخراط <span class="text-red-500">*</span></label>
+            <input type="text" id="inputMembershipNo" required class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition" placeholder="مثال: SEC2-001" />
+          </div>
+
+          <!-- Membership Status -->
+          <div class="sm:col-span-1 flex flex-col gap-1.5">
+            <label for="inputMembershipStatus" class="text-xs font-bold text-slate-700">وضعية الانخراط</label>
+            <select id="inputMembershipStatus" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition">
+              <option value="مفعل">مفعل</option>
+              <option value="غير مفعل">غير مفعل</option>
+            </select>
+          </div>
+
+          <!-- Subscription Status -->
+          <div class="sm:col-span-1 flex flex-col gap-1.5">
+            <label for="inputSubscriptionStatus" class="text-xs font-bold text-slate-700">وضعية الاشتراك</label>
+            <select id="inputSubscriptionStatus" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition">
+              <option value="مؤدى">مؤدى</option>
+              <option value="غير مؤدى">غير مؤدى</option>
+            </select>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="sm:col-span-1 flex flex-col gap-1.5">
+            <label for="inputPhone" class="text-xs font-bold text-slate-700">رقم الهاتف</label>
+            <input type="tel" id="inputPhone" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition" placeholder="06XXXXXXXX" />
+          </div>
+
+          <!-- National ID (CIN) -->
+          <div class="sm:col-span-1 flex flex-col gap-1.5">
+            <label for="inputCin" class="text-xs font-bold text-slate-700">رقم البطاقة الوطنية (CIN)</label>
+            <input type="text" id="inputCin" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition" placeholder="AB123456" />
+          </div>
+
+          <!-- Address -->
+          <div class="sm:col-span-2 flex flex-col gap-1.5">
+            <label for="inputAddress" class="text-xs font-bold text-slate-700">العنوان / رقم الدار</label>
+            <input type="text" id="inputAddress" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition" placeholder="القطاع 2، المنزل رقم..." />
+          </div>
+
+          <!-- Notes -->
+          <div class="sm:col-span-2 flex flex-col gap-1.5">
+            <label for="inputNotes" class="text-xs font-bold text-slate-700">ملاحظات إضافية</label>
+            <textarea id="inputNotes" rows="2" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-teal-700 focus:bg-white transition" placeholder="ملاحظات حول الانخراط أو الوضعية..."></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <!-- Print Card Button (Ready for next phase) -->
+        <button type="button" id="btnPrintCard" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-bold transition">
+          <i class="fa-solid fa-print text-slate-600"></i>
+          <span>طباعة بطاقة الانخراط</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs sm:text-sm font-bold transition">
+            إلغاء
+          </button>
+          <button type="submit" form="memberForm" class="px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs sm:text-sm font-bold transition shadow-md">
+            حفظ البيانات
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Storage Key
+    const STORAGE_KEY = "v29_population_sector2_app";
+
+    // Standard CSV Headers for Export / Import / Template
+    const CSV_HEADERS = [
+      "ID",
+      "الاسم الكامل",
+      "رقم الانخراط",
+      "وضعية الانخراط",
+      "وضعية الاشتراك",
+      "رقم الهاتف",
+      "رقم البطاقة الوطنية",
+      "العنوان / رقم الدار",
+      "ملاحظات"
+    ];
+
+    // Default Sample Data
+    const initialMembers = [
+      { id: "101", fullName: "أحمد بنعلي", membershipNo: "SEC2-001", membershipStatus: "مفعل", subscriptionStatus: "مؤدى", phone: "0661122334", cin: "AB123456", address: "القطاع 2، الدار رقم 12", notes: "عضو مؤسس" },
+      { id: "102", fullName: "فاطمة الزهراء العلمي", membershipNo: "SEC2-002", membershipStatus: "مفعل", subscriptionStatus: "غير مؤدى", phone: "0665566778", cin: "CD987654", address: "القطاع 2، الدار رقم 45", notes: "انخراط حديث" },
+      { id: "103", fullName: "محمد التازي", membershipNo: "SEC2-003", membershipStatus: "غير مفعل", subscriptionStatus: "غير مؤدى", phone: "0669988776", cin: "EF456789", address: "القطاع 2، الدار رقم 88", notes: "في انتظار التسوية" }
+    ];
+
+    let members = loadMembers();
+
+    // DOM Elements
+    const tableBody = document.getElementById("membersTableBody");
+    const searchInput = document.getElementById("searchInput");
+    const membersCounter = document.getElementById("membersCounter");
+    const profileModal = document.getElementById("profileModal");
+    const memberForm = document.getElementById("memberForm");
+    const fileImportInput = document.getElementById("fileImportInput");
+
+    // Load Data from LocalStorage
+    function loadMembers() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {
+        console.error("Storage read error", e);
+      }
+      return [...initialMembers];
+    }
+
+    // Save Data to LocalStorage
+    function saveMembers() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+    }
+
+    // Toast Notifications
+    function showToast(msg, type = "info") {
+      const toast = document.getElementById("toastNotification");
+      const icon = document.getElementById("toastIcon");
+      const message = document.getElementById("toastMessage");
+
+      toast.className = "mx-6 mt-4 p-3.5 rounded-xl text-sm font-bold flex items-center justify-between transition-all border";
+
+      if (type === "success") {
+        toast.classList.add("bg-emerald-50", "text-emerald-800", "border-emerald-200");
+        icon.className = "fa-solid fa-circle-check text-emerald-600 text-base";
+      } else if (type === "error") {
+        toast.classList.add("bg-rose-50", "text-rose-800", "border-rose-200");
+        icon.className = "fa-solid fa-circle-exclamation text-rose-600 text-base";
+      } else {
+        toast.classList.add("bg-teal-50", "text-teal-800", "border-teal-200");
+        icon.className = "fa-solid fa-circle-info text-teal-600 text-base";
+      }
+
+      message.textContent = msg;
+      toast.classList.remove("hidden");
+
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 5000);
+    }
+
+    function hideToast() {
+      document.getElementById("toastNotification").classList.add("hidden");
+    }
+
+    // Render Table
+    function renderTable() {
+      const query = searchInput.value.trim().toLowerCase();
+      tableBody.innerHTML = "";
+
+      const filtered = members.filter(m => 
+        (m.fullName || "").toLowerCase().includes(query) || 
+        (m.membershipNo || "").toLowerCase().includes(query)
+      );
+
+      membersCounter.querySelector("span").textContent = `إجمالي المنخرطين: ${filtered.length}`;
+
+      if (filtered.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-12 text-center text-slate-400 font-medium">
+              <i class="fa-solid fa-user-slash text-3xl mb-2 block text-slate-300"></i>
+              لا توجد نتائج مطابقة للبحث
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach((m) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+        const isActive = m.membershipStatus === "مفعل";
+        const isPaid = m.subscriptionStatus === "مؤدى";
+
+        tr.innerHTML = `
+          <td class="py-4 px-6 font-bold text-slate-900">
+            <button type="button" onclick="openModal('${m.id}')" class="text-teal-700 hover:text-teal-900 hover:underline text-right font-bold transition">
+              ${escapeHtml(m.fullName)}
+            </button>
+          </td>
+          <td class="py-4 px-6 font-mono text-slate-600 font-semibold">${escapeHtml(m.membershipNo)}</td>
+          <td class="py-4 px-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+              ${escapeHtml(m.membershipStatus)}
+            </span>
+          </td>
+          <td class="py-4 px-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold ${isPaid ? 'bg-teal-100 text-teal-800' : 'bg-amber-100 text-amber-800'}">
+              <span class="w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-teal-600' : 'bg-amber-500'}"></span>
+              ${escapeHtml(m.subscriptionStatus)}
+            </span>
+          </td>
+          <td class="py-4 px-6 text-center">
+            <button type="button" onclick="openModal('${m.id}')" class="p-2 text-slate-400 hover:text-teal-700 hover:bg-slate-100 rounded-lg transition" title="عرض والتعديل">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" onclick="deleteMember('${m.id}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="حذف">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Modal Control
+    function openModal(id = null) {
+      document.getElementById("modalTitle").textContent = id ? "بطاقة ملف المنخرط" : "إضافة منخرط جديد";
+      
+      if (id) {
+        const m = members.find(item => item.id === id);
+        if (!m) return;
+        document.getElementById("editMemberId").value = m.id;
+        document.getElementById("inputFullName").value = m.fullName || "";
+        document.getElementById("inputMembershipNo").value = m.membershipNo || "";
+        document.getElementById("inputMembershipStatus").value = m.membershipStatus || "مفعل";
+        document.getElementById("inputSubscriptionStatus").value = m.subscriptionStatus || "غير مؤدى";
+        document.getElementById("inputPhone").value = m.phone || "";
+        document.getElementById("inputCin").value = m.cin || "";
+        document.getElementById("inputAddress").value = m.address || "";
+        document.getElementById("inputNotes").value = m.notes || "";
+      } else {
+        memberForm.reset();
+        document.getElementById("editMemberId").value = "";
+      }
+
+      profileModal.classList.remove("hidden");
+      setTimeout(() => {
+        const card = profileModal.querySelector(".modal-card");
+        card.classList.remove("scale-95", "opacity-0");
+        card.classList.add("scale-100", "opacity-100");
+      }, 10);
+    }
+
+    function closeModal() {
+      const card = profileModal.querySelector(".modal-card");
+      card.classList.remove("scale-100", "opacity-100");
+      card.classList.add("scale-95", "opacity-0");
+      setTimeout(() => {
+        profileModal.classList.add("hidden");
+      }, 150);
+    }
+
+    // Form Submission (Add / Edit)
+    memberForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = document.getElementById("editMemberId").value;
+      const fullName = document.getElementById("inputFullName").value.trim();
+      const membershipNo = document.getElementById("inputMembershipNo").value.trim();
+
+      if (!fullName || !membershipNo) return;
+
+      if (id) {
+        // Edit Existing
+        const idx = members.findIndex(m => m.id === id);
+        if (idx !== -1) {
+          members[idx] = {
+            ...members[idx],
+            fullName,
+            membershipNo,
+            membershipStatus: document.getElementById("inputMembershipStatus").value,
+            subscriptionStatus: document.getElementById("inputSubscriptionStatus").value,
+            phone: document.getElementById("inputPhone").value.trim(),
+            cin: document.getElementById("inputCin").value.trim(),
+            address: document.getElementById("inputAddress").value.trim(),
+            notes: document.getElementById("inputNotes").value.trim()
+          };
+          showToast("تم تحديث بطاقة المنخرط بنجاح", "success");
+        }
+      } else {
+        // Create New
+        const newMember = {
+          id: String(Date.now()),
+          fullName,
+          membershipNo,
+          membershipStatus: document.getElementById("inputMembershipStatus").value,
+          subscriptionStatus: document.getElementById("inputSubscriptionStatus").value,
+          phone: document.getElementById("inputPhone").value.trim(),
+          cin: document.getElementById("inputCin").value.trim(),
+          address: document.getElementById("inputAddress").value.trim(),
+          notes: document.getElementById("inputNotes").value.trim()
+        };
+        members.unshift(newMember);
+        showToast("تمت إضافة المنخرط الجديد بنجاح", "success");
+      }
+
+      saveMembers();
+      renderTable();
+      closeModal();
+    });
+
+    // Delete Member
+    function deleteMember(id) {
+      const m = members.find(item => item.id === id);
+      if (!m) return;
+      if (confirm(`هل أنت تأكد من حذف المنخرط (${m.fullName})؟`)) {
+        members = members.filter(item => item.id !== id);
+        saveMembers();
+        renderTable();
+        showToast("تم حذف المنخرط من اللائحة", "info");
+      }
+    }
+
+    // Print Card Button Action (Phase 2 Prep)
+    document.getElementById("btnPrintCard").addEventListener("click", () => {
+      const fullName = document.getElementById("inputFullName").value.trim() || "المنخرط";
+      showToast(`مفتاح الطباعة جاهز للمرحلة القادمة بالنسبة للمنخرط: (${fullName})`, "info");
+    });
+
+    // Add Member Button Listener
+    document.getElementById("btnAddMember").addEventListener("click", () => openModal());
+
+    // CSV Download Helper with UTF-8 BOM
+    function downloadCSV(filename, rows) {
+      const csvContent = rows.map(row => row.map(cell => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(",")).join("\r\n");
+      const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // 1. Download Blank Template CSV
+    document.getElementById("btnDownloadTemplate").addEventListener("click", () => {
+      const emptySample = ["", "اسم المنخرط الكامل", "SEC2-XXXX", "مفعل", "غير مؤدى", "0600000000", "XX123456", "القطاع 2 الدار...", "ملاحظة..."];
+      downloadCSV("قالب_انخراط_الساكنة_قطاع2.csv", [CSV_HEADERS, emptySample]);
+      showToast("تم تحميل القالب الفارغ بنجاح", "info");
+    });
+
+    // 2. Export Members CSV
+    document.getElementById("btnExportCSV").addEventListener("click", () => {
+      const rows = members.map(m => [
+        m.id,
+        m.fullName,
+        m.membershipNo,
+        m.membershipStatus,
+        m.subscriptionStatus,
+        m.phone,
+        m.cin,
+        m.address,
+        m.notes
+      ]);
+      downloadCSV("لائحة_منخرطي_الساكنة_قطاع2.csv", [CSV_HEADERS, ...rows]);
+      showToast(`تم تصدير ${members.length} منخرطاً بنجاح`, "success");
+    });
+
+    // 3. Import Members CSV
+    document.getElementById("btnImportCSV").addEventListener("click", () => {
+      fileImportInput.value = "";
+      fileImportInput.click();
+    });
+
+    fileImportInput.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const content = String(evt.target?.result || "").replace(/^\uFEFF/, "");
+          const lines = content.split(/\r?\n/).filter(l => l.trim() !== "");
+
+          if (lines.length < 2) {
+            showToast("الملف المرفوع فارغ أو لا يحتوي على صفوف بيانات", "error");
+            return;
+          }
+
+          const parsedList = [];
+          for (let i = 1; i < lines.length; i++) {
+            const cols = parseCSVLine(lines[i]);
+            const fullName = cols[1] || "";
+            const membershipNo = cols[2] || "";
+
+            if (!fullName && !membershipNo) continue;
+
+            parsedList.push({
+              id: cols[0] || String(Date.now() + i),
+              fullName: fullName || "منخرط بدون اسم",
+              membershipNo: membershipNo || `SEC2-${i}`,
+              membershipStatus: cols[3] === "غير مفعل" ? "غير مفعل" : "مفعل",
+              subscriptionStatus: cols[4] === "مؤدى" ? "مؤدى" : "غير مؤدى",
+              phone: cols[5] || "",
+              cin: cols[6] || "",
+              address: cols[7] || "",
+              notes: cols[8] || ""
+            });
+          }
+
+          if (parsedList.length > 0) {
+            members = parsedList;
+            saveMembers();
+            renderTable();
+            showToast(`تم استيراد وتحديث ${parsedList.length} منخرطاً بنجاح`, "success");
+          } else {
+            showToast("لم يتم العثور على أعمدة صالحة للاستيراد في الملف", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("تعذر قراءة ملف CSV. تأكد من ترميز الملف وسلامة الأسطر", "error");
+        }
+      };
+      reader.readAsText(file, "UTF-8");
+    });
+
+    // Robust CSV Line Parsing Function
+    function parseCSVLine(line) {
+      const result = [];
+      let current = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        const next = line[i + 1];
+
+        if (ch === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = "";
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    }
+
+    // Search Filtering
+    searchInput.addEventListener("input", renderTable);
+
+    // Initial Render
+    renderTable();
+  </script>
+</body>
+</html>

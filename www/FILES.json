@@ -1,0 +1,70 @@
+[
+  {
+    "path": "README-AR.md",
+    "bytes": 2064
+  },
+  {
+    "path": "assets/css/app.css",
+    "bytes": 37778
+  },
+  {
+    "path": "assets/js/core-application.js",
+    "bytes": 271023
+  },
+  {
+    "path": "assets/js/modules/legacy-meetings-disabled.js",
+    "bytes": 107
+  },
+  {
+    "path": "assets/js/modules/meetings-navigation.js",
+    "bytes": 1566
+  },
+  {
+    "path": "assets/js/modules/meetings-overview.js",
+    "bytes": 1411
+  },
+  {
+    "path": "assets/js/modules/meetings-panels.js",
+    "bytes": 3147
+  },
+  {
+    "path": "assets/js/modules/meetings-refinements.js",
+    "bytes": 881
+  },
+  {
+    "path": "assets/js/modules/meetings-ui-import.js",
+    "bytes": 5756
+  },
+  {
+    "path": "assets/js/modules/members-registry-v27.js",
+    "bytes": 17447
+  },
+  {
+    "path": "assets/js/modules/population-registry-v28.js",
+    "bytes": 17024
+  },
+  {
+    "path": "assets/js/modules/population-sector-v29.js",
+    "bytes": 1481
+  },
+  {
+    "path": "assets/js/modules/water-navigation.js",
+    "bytes": 232
+  },
+  {
+    "path": "assets/js/modules/water-ui-enhancements.js",
+    "bytes": 4421
+  },
+  {
+    "path": "assets/js/tailwind-config.js",
+    "bytes": 757
+  },
+  {
+    "path": "index.html",
+    "bytes": 492958
+  },
+  {
+    "path": "population-window-reference.html",
+    "bytes": 29269
+  }
+]
